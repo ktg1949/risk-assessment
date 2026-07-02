@@ -347,44 +347,31 @@ function sbDelete(table, id) {
 }
 function sbUpload(path, file) {
   return new Promise(function(resolve, reject) {
-    // 경로의 각 세그먼트만 인코딩 (/ 는 유지)
-    var encodedPath = path.split('/').map(function(s) { return encodeURIComponent(s); }).join('/');
-    var url = SB + '/storage/v1/object/' + BUCKET + '/' + encodedPath;
-
-    function tryUpload(key, fallback) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', url, true);
-      xhr.setRequestHeader('apikey', key);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + key);
-      xhr.setRequestHeader('Content-Type', 'application/pdf');
-      xhr.setRequestHeader('x-upsert', 'true');
-      xhr.timeout = 120000;
-      xhr.upload.onprogress = function(e) {
-        if (e.lengthComputable) {
-          var pct = Math.round(e.loaded / e.total * 60);
-          document.getElementById('progFill').style.width = pct + '%';
-          document.getElementById('progTxt').textContent = '업로드 중... ' + pct + '%';
-        }
-      };
-      xhr.onload = function() {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try { resolve(JSON.parse(xhr.responseText)); } catch(e) { resolve({}); }
-        } else if (fallback) {
-          // JWT 키로 재시도
-          tryUpload(fallback, null);
-        } else {
-          reject(new Error('Storage 오류 (' + xhr.status + '): ' + xhr.responseText));
-        }
-      };
-      xhr.onerror = function() {
-        if (fallback) { tryUpload(fallback, null); }
-        else { reject(new Error('네트워크 오류 — GitHub Pages에서 Supabase 접근 불가')); }
-      };
-      xhr.ontimeout = function() { reject(new Error('업로드 시간 초과')); };
-      xhr.send(file);
-    }
-
-    tryUpload(PUB_KEY, KEY);
+    var fnUrl = SB + '/functions/v1/upload-pdf';
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', fnUrl, true);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + KEY);
+    xhr.setRequestHeader('apikey', KEY);
+    xhr.setRequestHeader('x-storage-path', path);
+    xhr.setRequestHeader('Content-Type', 'application/pdf');
+    xhr.timeout = 120000;
+    xhr.upload.onprogress = function(e) {
+      if (e.lengthComputable) {
+        var pct = Math.round(e.loaded / e.total * 80);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progTxt').textContent = '업로드 중... ' + pct + '%';
+      }
+    };
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try { resolve(JSON.parse(xhr.responseText)); } catch(e) { resolve({}); }
+      } else {
+        reject(new Error('Edge Function 오류 (' + xhr.status + '): ' + xhr.responseText));
+      }
+    };
+    xhr.onerror = function() { reject(new Error('네트워크 오류')); };
+    xhr.ontimeout = function() { reject(new Error('업로드 시간 초과')); };
+    xhr.send(file);
   });
 }
 function sbRemove(path) {
