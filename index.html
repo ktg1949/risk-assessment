@@ -185,22 +185,29 @@ tr:hover td { background:#f8fafc; }
       <div class="nav-sec">위험성평가 자료</div>
       <div class="nav-parent" id="np-EES" onclick="toggleNav('EES')"><span>🏭 EES 위험성평가</span><span class="arrow">▶</span></div>
       <div class="nav-children" id="nc-EES">
-        <div class="nav-child" onclick="showPage('docs','EES','운영(발전/환경)')">📂 운영(발전/환경)</div>
-        <div class="nav-child" onclick="showPage('docs','EES','기계(보일러/터빈)')">📂 기계(보일러/터빈)</div>
-        <div class="nav-child" onclick="showPage('docs','EES','계전(전기/제어)')">📂 계전(전기/제어)</div>
-        <div class="nav-child" onclick="showPage('docs','EES','연료설비(연료/환경)')">📂 연료설비(연료/환경)</div>
+        <div class="nav-child" onclick="showPage('docs','EES','발전운영')">📂 발전운영</div>
+        <div class="nav-child" onclick="showPage('docs','EES','환경운영')">📂 환경운영</div>
+        <div class="nav-child" onclick="showPage('docs','EES','보일러')">📂 보일러</div>
+        <div class="nav-child" onclick="showPage('docs','EES','터빈')">📂 터빈</div>
+        <div class="nav-child" onclick="showPage('docs','EES','전기')">📂 전기</div>
+        <div class="nav-child" onclick="showPage('docs','EES','제어')">📂 제어</div>
+        <div class="nav-child" onclick="showPage('docs','EES','연료설비')">📂 연료설비</div>
+        <div class="nav-child" onclick="showPage('docs','EES','환경설비')">📂 환경설비</div>
       </div>
       <div class="nav-parent" id="np-HPS" onclick="toggleNav('HPS')"><span>🏭 HPS 위험성평가</span><span class="arrow">▶</span></div>
       <div class="nav-children" id="nc-HPS">
-        <div class="nav-child" onclick="showPage('docs','HPS','기계(보일러/터빈)')">📂 기계(보일러/터빈)</div>
-        <div class="nav-child" onclick="showPage('docs','HPS','계전(전기/제어)')">📂 계전(전기/제어)</div>
-        <div class="nav-child" onclick="showPage('docs','HPS','연료설비(연료/환경)')">📂 연료설비(연료/환경)</div>
+        <div class="nav-child" onclick="showPage('docs','HPS','보일러')">📂 보일러</div>
+        <div class="nav-child" onclick="showPage('docs','HPS','터빈')">📂 터빈</div>
+        <div class="nav-child" onclick="showPage('docs','HPS','전기')">📂 전기</div>
+        <div class="nav-child" onclick="showPage('docs','HPS','제어')">📂 제어</div>
+        <div class="nav-child" onclick="showPage('docs','HPS','연료탈황')">📂 연료탈황</div>
+        <div class="nav-child" onclick="showPage('docs','HPS','환경설비')">📂 환경설비</div>
       </div>
       <div class="nav-parent" id="np-KEPS" onclick="toggleNav('KEPS')"><span>🏭 KEPS 위험성평가</span><span class="arrow">▶</span></div>
       <div class="nav-children" id="nc-KEPS">
-        <div class="nav-child" onclick="showPage('docs','KEPS','연료')">📂 연료</div>
-        <div class="nav-child" onclick="showPage('docs','KEPS','환경')">📂 환경</div>
-        <div class="nav-child" onclick="showPage('docs','KEPS','수처리')">📂 수처리</div>
+        <div class="nav-child" onclick="showPage('docs','KEPS','연료운영')">📂 연료운영</div>
+        <div class="nav-child" onclick="showPage('docs','KEPS','환경운영')">📂 환경운영</div>
+        <div class="nav-child" onclick="showPage('docs','KEPS','수처리운영')">📂 수처리운영</div>
       </div>
       <div class="nav-parent" id="np-경동" onclick="toggleNav('경동')"><span>🏭 경동 위험성평가</span><span class="arrow">▶</span></div>
       <div class="nav-children" id="nc-경동">
@@ -323,10 +330,12 @@ var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6
 var PUB_KEY = 'sb_publishable_JIFKCu9957rZamr6ZNeV8Q_nzrHhsbu';
 var BUCKET = 'risk-files';
 var DEPTS = {
-  'EES':['운영(발전/환경)','기계(보일러/터빈)','계전(전기/제어)','연료설비(연료/환경)'],
-  'HPS':['기계(보일러/터빈)','계전(전기/제어)','연료설비(연료/환경)'],
-  'KEPS':['연료','환경','수처리'], '경동':['기계','전기'],
-  '세방':['전체'], '관련자료':['전체']
+  'EES':['발전운영','환경운영','보일러','터빈','전기','제어','연료설비','환경설비'],
+  'HPS':['보일러','터빈','전기','제어','연료탈황','환경설비'],
+  'KEPS':['연료운영','환경운영','수처리운영'],
+  '경동':['기계','전기'],
+  '세방':['전체'],
+  '관련자료':['전체']
 };
 
 // ===== SUPABASE REST (fetch 직접 호출 - SDK 없음) =====
