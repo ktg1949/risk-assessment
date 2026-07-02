@@ -355,21 +355,24 @@ function sbDelete(table, id) {
   return fetch(SB + '/rest/v1/' + table + '?id=eq.' + id, { method: 'DELETE', headers: H });
 }
 function sbUpload(path, file) {
-  var fnUrl = SB + '/functions/v1/upload-pdf';
-  return fetch(fnUrl, {
+  // Supabase Storage REST API 직접 호출 (PSM 시스템 방식)
+  var url = SB + '/storage/v1/object/' + BUCKET + '/' + path;
+  return fetch(url, {
     method: 'POST',
     headers: {
-      'Authorization': 'Bearer ' + KEY,
       'apikey': KEY,
-      'x-storage-path': path,
-      'Content-Type': 'application/pdf'
+      'Authorization': 'Bearer ' + KEY,
+      'Content-Type': file.type || 'application/pdf',
+      'x-upsert': 'true'
     },
-    body: file,
-    mode: 'cors'
+    body: file
   }).then(function(r) {
-    console.log('Upload status:', r.status);
-    if (!r.ok) return r.text().then(function(t) { throw new Error('오류(' + r.status + '): ' + t); });
-    return r.json();
+    console.log('Storage upload status:', r.status);
+    if (r.status === 200 || r.status === 201) return r.json().catch(function(){ return {}; });
+    return r.text().then(function(t) {
+      console.error('Storage error:', t);
+      throw new Error('Storage 오류(' + r.status + '): ' + t);
+    });
   });
 }
 function sbRemove(path) {
