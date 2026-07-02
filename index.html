@@ -372,13 +372,14 @@ function sbUpload(path, file) {
       }
     };
     xhr.onload = function() {
+      console.log('Upload response:', xhr.status, xhr.responseText);
       if (xhr.status >= 200 && xhr.status < 300) {
         try { resolve(JSON.parse(xhr.responseText)); } catch(e) { resolve({}); }
       } else {
-        reject(new Error('Edge Function 오류 (' + xhr.status + '): ' + xhr.responseText));
+        reject(new Error('오류 (' + xhr.status + '): ' + xhr.responseText));
       }
     };
-    xhr.onerror = function() { reject(new Error('네트워크 오류')); };
+    xhr.onerror = function() { reject(new Error('네트워크 오류 — 브라우저 F12 콘솔 확인')); };
     xhr.ontimeout = function() { reject(new Error('업로드 시간 초과')); };
     xhr.send(file);
   });
@@ -597,6 +598,9 @@ function onFilePick(input) {
   var el = document.getElementById('fileSel');
   el.style.display = 'block';
   el.textContent = '✅ ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + 'MB)';
+  // 오류 메시지 리셋
+  var msgEl = document.getElementById('upMsg');
+  msgEl.textContent = '';
 }
 function doUpload() {
   var site = document.getElementById('upSite').value;
