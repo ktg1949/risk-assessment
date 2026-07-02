@@ -345,14 +345,32 @@ function sbDelete(table, id) {
   return fetch(SB + '/rest/v1/' + table + '?id=eq.' + id, { method: 'DELETE', headers: H });
 }
 function sbUpload(path, file) {
-  var url = SB + '/storage/v1/object/' + BUCKET + '/' + path;
-  return fetch(url, {
-    method: 'POST',
-    headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'x-upsert': 'true', 'Content-Type': 'application/pdf' },
-    body: file
-  }).then(function(r) {
-    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
-    return r.json();
+  return new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    var url = SB + '/storage/v1/object/' + BUCKET + '/' + encodeURIComponent(path).replace(/%2F/g, '/');
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('apikey', KEY);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + KEY);
+    xhr.setRequestHeader('Content-Type', 'application/pdf');
+    xhr.setRequestHeader('x-upsert', 'true');
+    xhr.timeout = 120000;
+    xhr.upload.onprogress = function(e) {
+      if (e.lengthComputable) {
+        var pct = Math.round(e.loaded / e.total * 60);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progTxt').textContent = '업로드 중... ' + pct + '%';
+      }
+    };
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try { resolve(JSON.parse(xhr.responseText)); } catch(e) { resolve({}); }
+      } else {
+        reject(new Error('Storage 오류 (' + xhr.status + '): ' + xhr.responseText));
+      }
+    };
+    xhr.onerror = function() { reject(new Error('네트워크 오류 - 인터넷 연결 확인')); };
+    xhr.ontimeout = function() { reject(new Error('업로드 시간 초과 (2분)')); };
+    xhr.send(file);
   });
 }
 function sbRemove(path) {
