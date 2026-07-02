@@ -428,10 +428,12 @@ function doRegister() {
   if (pw.length < 6) { msg('registerMsg', '비밀번호는 6자 이상', 'error'); return; }
   var u = getUsers();
   if (u.find(function(x) { return x.id === id; })) { msg('registerMsg', '이미 사용 중인 아이디', 'error'); return; }
-  u.push({ id:id, pw:pw, name:name, dept:dept, role:'user', status:'pending', joinDate:today() });
+  u.push({ id:id, pw:pw, name:name, dept:dept, role:'user', status:'approved', joinDate:today() });
   saveUsers(u);
-  msg('registerMsg', '신청 완료! 관리자 승인 후 로그인하세요.', 'success');
+  msg('registerMsg', '✅ 회원가입 완료! 로그인하세요.', 'success');
   ['regName','regDept','regId','regPw'].forEach(function(i) { document.getElementById(i).value = ''; });
+  // 2초 후 로그인 탭으로 자동 이동
+  setTimeout(function(){ switchTab('login'); }, 2000);
 }
 function doLogout() {
   me = null;
