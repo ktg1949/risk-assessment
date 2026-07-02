@@ -586,8 +586,17 @@ function doUpload() {
   var pf = document.getElementById('progFill'); var pt = document.getElementById('progTxt');
   pf.style.width = '20%'; pt.textContent = 'Storage 업로드 중...';
 
-  var safeName = Date.now() + '_' + pendFile.name.replace(/[^\w가-힣._-]/g, '_');
-  var path = site + '/' + dept + '/' + safeName;
+  // 한글 파일명 → 영문/숫자만 남기고 나머지는 _ 로 치환 (Supabase InvalidKey 방지)
+  var safeName = Date.now() + '_' + pendFile.name
+    .replace(/[가-힣]/g, function(c) {
+      var map = {'가':'ga','나':'na','다':'da','라':'ra','마':'ma','바':'ba','사':'sa','아':'a','자':'ja','차':'cha','카':'ka','타':'ta','파':'pa','하':'ha'};
+      return map[c] || '_';
+    })
+    .replace(/[^\w._-]/g, '_')
+    .replace(/_+/g, '_');
+  var safeSite = site.replace(/[^\w]/g, '_');
+  var safeDept = dept.replace(/[^\w]/g, '_');
+  var path = safeSite + '/' + safeDept + '/' + safeName;
 
   sbUpload(path, pendFile)
     .then(function() {
